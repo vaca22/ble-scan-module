@@ -10,7 +10,7 @@
 #include "console/console.h"
 #include "services/gap/ble_svc_gap.h"
 #include "blecent.h"
-
+#include "ble_master.h"
 static const char *tag = "NimBLE_BLE_CENT";
 static int blecent_gap_event(struct ble_gap_event *event, void *arg);
 static uint8_t peer_addr[6];
@@ -244,46 +244,6 @@ blecent_scan(void)
 }
 
 
-/**
- * Connects to the sender of the specified advertisement of it looks
- * interesting.  A device is "interesting" if it advertises connectability and
- * support for the Alert Notification service.
- */
-static void
-blecent_connect_if_interesting(const struct ble_gap_disc_desc *disc)
-{
-    uint8_t own_addr_type;
-    int rc;
-
-
-
-    /* Scanning must be stopped before a connection can be initiated. */
-    rc = ble_gap_disc_cancel();
-    if (rc != 0) {
-        MODLOG_DFLT(DEBUG, "Failed to cancel scan; rc=%d\n", rc);
-        return;
-    }
-
-    /* Figure out address to use for connect (no privacy for now) */
-    rc = ble_hs_id_infer_auto(0, &own_addr_type);
-    if (rc != 0) {
-        MODLOG_DFLT(ERROR, "error determining address type; rc=%d\n", rc);
-        return;
-    }
-
-    /* Try to connect the the advertiser.  Allow 30 seconds (30000 ms) for
-     * timeout.
-     */
-
-    rc = ble_gap_connect(own_addr_type, &disc->addr, 30000, NULL,
-                         blecent_gap_event, NULL);
-    if (rc != 0) {
-        MODLOG_DFLT(ERROR, "Error: Failed to connect to device; addr_type=%d "
-                    "addr=%s; rc=%d\n",
-                    disc->addr.type, addr_str(disc->addr.val), rc);
-        return;
-    }
-}
 
 /**
  * The nimble host executes this callback when a GAP event occurs.  The
@@ -335,7 +295,7 @@ blecent_gap_event(struct ble_gap_event *event, void *arg)
         }
 
         /* Try to connect to the advertiser if it looks interesting. */
-        blecent_connect_if_interesting(&event->disc);
+        //blecent_connect_if_interesting(&event->disc);
         return 0;
 
     case BLE_GAP_EVENT_CONNECT:
@@ -471,7 +431,7 @@ void blecent_host_task(void *param)
 }
 
 void
-app_main(void)
+start_scan(void)
 {
     int rc;
     /* Initialize NVS — it is used to store PHY calibration data */
