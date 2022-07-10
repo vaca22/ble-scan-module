@@ -9,6 +9,8 @@
 #include "ble_master.h"
 #include "wifi-lgh.h"
 #include "system-lgh.h"
+#include "audio.h"
+#include "sdcard.h"
 
 #define GPIO_OUTPUT_IO_LED    3
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_LED))
@@ -37,6 +39,12 @@ void app_main(void)
     setIo32();
     int64_t aa= lc_low_system_timestamp_get();
     ESP_LOGE("na","%lld",aa);
+    ESP_ERROR_CHECK(i2cdev_init());
+    sd_card_init();
+    audio_es8311_init();
+    audio_cs5230e_init();
+    audio_cs5230e_enable();
+    xTaskCreatePinnedToCore(audio_echo_test, "audio_echo_test", 8192, NULL, 5, NULL, 1);
     while (1){
         gpio_set_level(GPIO_OUTPUT_IO_LED, 0);
         vTaskDelay(200);
