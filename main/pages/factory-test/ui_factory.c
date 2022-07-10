@@ -266,7 +266,7 @@ void ui_screen_factory_screen_init(void) {
 
     lv_obj_set_align(ui_label_settings, LV_ALIGN_CENTER);
 
-    lv_label_set_text(ui_label_settings, "设置");
+    lv_label_set_text(ui_label_settings, "Factory");
 
     lv_obj_set_style_text_font(ui_label_settings, &ui_font_FontRegular,
                                LV_PART_MAIN | LV_STATE_DEFAULT);
