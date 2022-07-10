@@ -239,22 +239,10 @@ void audio_echo_test2(void *args) {
         position+=RECV_BUF_SIZE/2;
 
 
-        ret = i2s_write(AUDIO_I2S_NUM, mic_data, RECV_BUF_SIZE,
+       i2s_write(AUDIO_I2S_NUM, mic_data, RECV_BUF_SIZE,
                         &bytes_write, 100);
 
-        if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "i2s write error");
-            abort();
-        }else{
-            ESP_LOGE("fuck","asdf");
-        }
 
-//        if (file_bytes_read < RECV_BUF_SIZE) {
-//            i2s_zero_dma_buffer(AUDIO_I2S_NUM);
-//        }
-
-//        audio_cs5230e_disable();
-//        vTaskDelay(10);
 
 
     }
