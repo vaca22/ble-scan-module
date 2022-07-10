@@ -19,6 +19,7 @@ extern lv_obj_t *ui_screen_boot_guide;
 
 extern void load_ui_screen_boot_guide(void);
 extern void load_screen_home(void);
+extern void load_screen_factory(void);
 extern void load_settings_screen(void);
 extern void load_shutdown_screen(void);
 extern void load_screen_study_weekly(void);

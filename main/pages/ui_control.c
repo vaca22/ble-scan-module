@@ -25,7 +25,7 @@ void ui_init_root(void)
     printf("load_ui_screen_boot_guide\n");
     //
     // load_ui_screen_boot_guide();
-    load_screen_home();
+    load_screen_factory();
 
     // // 判断绑定状态
     // #ifdef DEVICE_BIND_STATUS == 0
