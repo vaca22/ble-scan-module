@@ -7,6 +7,7 @@
 #include "ui_helpers.h"
 #include <stdio.h>
 #include <esp_ota_ops.h>
+#include <esp_log.h>
 #include "ui_control.h"
 
 extern lv_indev_t *lv_keypad_device_object;
@@ -93,6 +94,16 @@ static void ui_screen_factory_callback(lv_event_t *e) {
     }
 }
 
+
+static lv_obj_t * list1;
+static void event_handler(lv_event_t * e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target(e);
+    if(code == LV_EVENT_CLICKED) {
+        ESP_LOGE("good","Clicked: %s", lv_list_get_btn_text(list1, obj));
+    } }
+
 ///////////////////// SCREENS ////////////////////
 void ui_screen_factory_screen_init(void) {
     // ui_screen_factory
@@ -107,6 +118,82 @@ void ui_screen_factory_screen_init(void) {
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(ui_screen_factory, 0,
                                   LV_PART_MAIN | LV_STATE_DEFAULT);
+
+
+    lv_obj_t * arc = lv_arc_create(ui_screen_factory);
+    lv_obj_set_size(arc, 50, 50);
+    lv_arc_set_rotation(arc, 135);
+    lv_arc_set_bg_angles(arc, 0, 270);
+    lv_arc_set_value(arc, 40);
+    lv_obj_center(arc);
+    lv_obj_set_style_border_color(arc, lv_color_hex(0x474747),
+                                  LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_clear_flag(arc, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_add_event_cb(arc, ui_event_Panel_word_book,
+                        LV_EVENT_ALL, NULL);
+    lv_obj_set_style_radius(arc, 0,
+                            LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(arc, lv_color_hex(0x474747),
+                                  LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(arc, 255,
+                                LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(arc, 1,
+                                  LV_PART_MAIN | LV_STATE_DEFAULT);
+
+
+    ui_Panel_word_book = lv_obj_create(ui_screen_factory);
+
+    lv_obj_set_width(ui_Panel_word_book, 82);
+    lv_obj_set_height(ui_Panel_word_book, 105);
+
+    lv_obj_set_x(ui_Panel_word_book, 17);
+    lv_obj_set_y(ui_Panel_word_book, 33);
+
+    lv_obj_clear_flag(ui_Panel_word_book, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_add_event_cb(ui_Panel_word_book, ui_event_Panel_word_book,
+                        LV_EVENT_ALL, NULL);
+    lv_obj_set_style_radius(ui_Panel_word_book, 0,
+                            LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_Panel_word_book, lv_color_hex(0x474747),
+                                  LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_Panel_word_book, 255,
+                                LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(ui_Panel_word_book, 1,
+                                  LV_PART_MAIN | LV_STATE_DEFAULT);
+
+
+
+
+    list1 = lv_list_create(ui_screen_factory);
+    lv_obj_set_size(list1, 180, 100);
+    lv_obj_center(list1);
+/*Add buttons to the list*/
+    lv_obj_t * btn;
+    lv_list_add_text(list1, "File");
+    btn = lv_list_add_btn(list1, LV_SYMBOL_FILE, "New");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+    btn = lv_list_add_btn(list1, LV_SYMBOL_DIRECTORY, "Open");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+    btn = lv_list_add_btn(list1, LV_SYMBOL_SAVE, "Save");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+    btn = lv_list_add_btn(list1, LV_SYMBOL_CLOSE, "Delete");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+
+
+    btn = lv_list_add_btn(list1, LV_SYMBOL_EDIT, "Edit");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+    lv_list_add_text(list1, "Connectivity");
+    btn = lv_list_add_btn(list1, LV_SYMBOL_BLUETOOTH, "Bluetooth");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+
+    lv_list_add_text(list1, "Exit");
+    btn = lv_list_add_btn(list1, LV_SYMBOL_OK, "Apply");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+    btn = lv_list_add_btn(list1, LV_SYMBOL_CLOSE, "Close");
+    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+
 
 
 
