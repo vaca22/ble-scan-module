@@ -44,6 +44,7 @@ esp_err_t audio_cs5230e_enable(void);
 esp_err_t audio_cs5230e_disable(void);
 
 void audio_echo_test(void *args);
+void audio_echo_test2(void *args);
 /**********************
  *      MACROS
  **********************/

@@ -9,7 +9,9 @@ idf_component_register(
         "configs"
         "services/audio"
         "services/battery"
+        "pages/factory-test"
         "services/button"
         "services/lv_port"
         "services/sdcard"
-        "services/setting")
+        "services/setting"
+        EMBED_FILES "canon.pcm")

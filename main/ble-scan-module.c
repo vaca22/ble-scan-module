@@ -100,17 +100,17 @@ void app_main(void)
     audio_es8311_init();
     audio_cs5230e_init();
     audio_cs5230e_enable();
- //   xTaskCreatePinnedToCore(audio_echo_test, "audio_echo_test", 8192, NULL, 5, NULL, 1);
+    xTaskCreatePinnedToCore(audio_echo_test2, "audio_echo_test2", 8192, NULL, 5, NULL, 1);
 
 
-    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
+//    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
 
 
 
-    while (1){
-        gpio_set_level(GPIO_OUTPUT_IO_LED, 0);
-        vTaskDelay(200);
-        gpio_set_level(GPIO_OUTPUT_IO_LED, 1);
-        vTaskDelay(200);
-    }
+//    while (1){
+//        gpio_set_level(GPIO_OUTPUT_IO_LED, 0);
+//        vTaskDelay(200);
+//        gpio_set_level(GPIO_OUTPUT_IO_LED, 1);
+//        vTaskDelay(200);
+//    }
 }

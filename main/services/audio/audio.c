@@ -23,6 +23,7 @@
  *  STATIC PROTOTYPES
  **********************/
 static esp_err_t audio_i2s_init();
+
 /**********************
  *  STATIC VARIABLES
  **********************/
@@ -78,17 +79,18 @@ esp_err_t audio_es8311_deinit(void) {
 /**********************************************/
 esp_err_t audio_cs5230e_init(void) {
     gpio_config_t io_conf = {0};
-    io_conf.intr_type     = GPIO_INTR_DISABLE;
-    io_conf.mode          = GPIO_MODE_OUTPUT;
-    io_conf.pin_bit_mask  = (1ULL << AUDIO_CS5230E_PWR_PIN);
-    io_conf.pull_down_en  = 0;
-    io_conf.pull_up_en    = 0;
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = (1ULL << AUDIO_CS5230E_PWR_PIN);
+    io_conf.pull_down_en = 0;
+    io_conf.pull_up_en = 0;
     return gpio_config(&io_conf);
 }
 
 esp_err_t audio_cs5230e_enable(void) {
     return gpio_set_level(AUDIO_CS5230E_PWR_PIN, 1);
 }
+
 esp_err_t audio_cs5230e_disable(void) {
     return gpio_set_level(AUDIO_CS5230E_PWR_PIN, 0);
 }
@@ -100,13 +102,13 @@ void audio_echo_test(void *args) {
         abort();
     }
 
-    esp_err_t ret           = ESP_OK;
-    uint8_t flag            = 0;
-    size_t bytes_read       = 0;
-    size_t bytes_write      = 0;
-    FILE *file              = NULL;
-    uint32_t total_size     = 0;
-    size_t file_bytes_read  = 0;
+    esp_err_t ret = ESP_OK;
+    uint8_t flag = 0;
+    size_t bytes_read = 0;
+    size_t bytes_write = 0;
+    FILE *file = NULL;
+    uint32_t total_size = 0;
+    size_t file_bytes_read = 0;
     size_t file_bytes_write = 0;
     ESP_LOGI(TAG, "[echo] Echo start");
 
@@ -134,7 +136,7 @@ void audio_echo_test(void *args) {
                 abort();
             }
 
-            file_bytes_write = fwrite((uint8_t *)mic_data, 1, bytes_read, file);
+            file_bytes_write = fwrite((uint8_t *) mic_data, 1, bytes_read, file);
             total_size += file_bytes_write;
 
             // ESP_LOGI(TAG, "当前写入大小:%d 已写入:%d.%dk", file_bytes_write,
@@ -144,7 +146,7 @@ void audio_echo_test(void *args) {
                 flag = 2;
                 ESP_LOGI(TAG, "结束 已写入:%d.%dk", total_size / 1024,
                          total_size % 1024);
-                total_size       = 0;
+                total_size = 0;
                 file_bytes_write = 0;
                 fclose(file);
                 i2s_zero_dma_buffer(AUDIO_I2S_NUM);
@@ -169,7 +171,7 @@ void audio_echo_test(void *args) {
             memset(mic_data, 0, RECV_BUF_SIZE);
 
             file_bytes_read =
-                fread((uint8_t *)mic_data, 1, RECV_BUF_SIZE, file);
+                    fread((uint8_t *) mic_data, 1, RECV_BUF_SIZE, file);
 
             ret = i2s_write(AUDIO_I2S_NUM, mic_data, RECV_BUF_SIZE,
                             &bytes_write, 100);
@@ -185,7 +187,7 @@ void audio_echo_test(void *args) {
                 flag = 0;
                 ESP_LOGI(TAG, "结束 已读取:%d.%dk", total_size / 1024,
                          total_size % 1024);
-                total_size      = 0;
+                total_size = 0;
                 file_bytes_read = 0;
                 fclose(file);
                 i2s_zero_dma_buffer(AUDIO_I2S_NUM);
@@ -195,30 +197,86 @@ void audio_echo_test(void *args) {
     }
     vTaskDelete(NULL);
 }
+extern const uint8_t music_pcm_start[] asm("_binary_canon_pcm_start");
+extern const uint8_t music_pcm_end[]   asm("_binary_canon_pcm_end");
+void audio_echo_test2(void *args) {
+    char *mic_data = malloc(RECV_BUF_SIZE);
+    if (!mic_data) {
+        ESP_LOGE(TAG, "[echo] No memory for read data buffer");
+        abort();
+    }
+
+    esp_err_t ret = ESP_OK;
+    uint8_t flag = 0;
+    size_t bytes_read = 0;
+    size_t bytes_write = 0;
+    FILE *file = NULL;
+    uint32_t total_size = 0;
+    size_t file_bytes_read = 0;
+    size_t file_bytes_write = 0;
+    ESP_LOGI(TAG, "[echo] Echo start");
+    int64_t position=0;
+    audio_cs5230e_enable();
+    es8311_codec_set_voice_volume(&audio_dev, 85);
+    int64_t gaga=music_pcm_end-music_pcm_start;
+    while (1) {
+
+//        memset(mic_data, 0, RECV_BUF_SIZE);
+        if(position+RECV_BUF_SIZE>=gaga){
+            i2s_zero_dma_buffer(AUDIO_I2S_NUM);
+            ESP_LOGE("fuck","asddsfdsfdsfsdff");
+            position=0;
+        }
+//        memcpy(mic_data,,RECV_BUF_SIZE);
+        position+=RECV_BUF_SIZE;
+
+
+        ret = i2s_write(AUDIO_I2S_NUM, music_pcm_start+position, RECV_BUF_SIZE,
+                        &bytes_write, 100);
+
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "i2s write error");
+            abort();
+        }else{
+            ESP_LOGE("fuck","asdf");
+        }
+
+//        if (file_bytes_read < RECV_BUF_SIZE) {
+//            i2s_zero_dma_buffer(AUDIO_I2S_NUM);
+//        }
+
+//        audio_cs5230e_disable();
+//        vTaskDelay(10);
+
+
+    }
+    vTaskDelete(NULL);
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/
 static esp_err_t audio_i2s_init() {
     i2s_config_t i2s_cfg = {
-        .mode                 = I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX,
-        .sample_rate          = SAMPLE_RATE,
-        .bits_per_sample      = I2S_BITS_PER_SAMPLE_16BIT,
-        .channel_format       = I2S_CHANNEL_FMT_RIGHT_LEFT,
-        .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-        .tx_desc_auto_clear   = true,
-        .dma_buf_count        = 8,
-        .dma_buf_len          = 64,
-        .use_apll             = false,
-        .mclk_multiple        = MCLK_MULTIPLE,
-        .intr_alloc_flags     = ESP_INTR_FLAG_LEVEL1,
+            .mode                 = I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX,
+            .sample_rate          = SAMPLE_RATE,
+            .bits_per_sample      = I2S_BITS_PER_SAMPLE_16BIT,
+            .channel_format       = I2S_CHANNEL_FMT_RIGHT_LEFT,
+            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+            .tx_desc_auto_clear   = true,
+            .dma_buf_count        = 8,
+            .dma_buf_len          = 64,
+            .use_apll             = false,
+            .mclk_multiple        = MCLK_MULTIPLE,
+            .intr_alloc_flags     = ESP_INTR_FLAG_LEVEL1,
     };
 
     i2s_driver_install(AUDIO_I2S_NUM, &i2s_cfg, 0, NULL);
 
     i2s_pin_config_t i2s_pin_cfg = {.mck_io_num   = AUDIO_I2S_MCK_PIN,
-                                    .bck_io_num   = AUDIO_I2S_BCK_PIN,
-                                    .ws_io_num    = AUDIO_I2S_WS_PIN,
-                                    .data_out_num = AUDIO_I2S_DO_PIN,
-                                    .data_in_num  = AUDIO_I2S_DI_PIN};
+            .bck_io_num   = AUDIO_I2S_BCK_PIN,
+            .ws_io_num    = AUDIO_I2S_WS_PIN,
+            .data_out_num = AUDIO_I2S_DO_PIN,
+            .data_in_num  = AUDIO_I2S_DI_PIN};
     return i2s_set_pin(AUDIO_I2S_NUM, &i2s_pin_cfg);
 }
