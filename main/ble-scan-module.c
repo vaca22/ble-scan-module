@@ -103,7 +103,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(audio_echo_test2, "audio_echo_test2", 8192, NULL, 5, NULL, 1);
 
 
-//    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
+    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
 
 
 

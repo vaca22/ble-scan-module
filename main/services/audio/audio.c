@@ -13,7 +13,7 @@
  *********************/
 #define TAG           "Audio"
 #define RECV_BUF_SIZE 1024 * 2
-#define SAMPLE_RATE   8000
+#define SAMPLE_RATE   16000
 #define MCLK_MULTIPLE I2S_MCLK_MULTIPLE_128
 /**********************
  *      TYPEDEFS
@@ -205,6 +205,7 @@ void audio_echo_test2(void *args) {
         ESP_LOGE(TAG, "[echo] No memory for read data buffer");
         abort();
     }
+    vTaskDelay(1000);
 
     esp_err_t ret = ESP_OK;
     uint8_t flag = 0;
@@ -227,11 +228,18 @@ void audio_echo_test2(void *args) {
             ESP_LOGE("fuck","asddsfdsfdsfsdff");
             position=0;
         }
-//        memcpy(mic_data,,RECV_BUF_SIZE);
-        position+=RECV_BUF_SIZE;
+     //   memcpy(mic_data,music_pcm_start+position,RECV_BUF_SIZE/2);
+        for(int k=0;k<RECV_BUF_SIZE/4;k++){
+            mic_data[4*k]=*(music_pcm_start+position+k*2);
+            mic_data[4*k+1]=*(music_pcm_start+position+k*2+1);
+            mic_data[4*k+2]=*(music_pcm_start+position+k*2);
+            mic_data[4*k+3]=*(music_pcm_start+position+k*2+1);
+        }
+
+        position+=RECV_BUF_SIZE/2;
 
 
-        ret = i2s_write(AUDIO_I2S_NUM, music_pcm_start+position, RECV_BUF_SIZE,
+        ret = i2s_write(AUDIO_I2S_NUM, mic_data, RECV_BUF_SIZE,
                         &bytes_write, 100);
 
         if (ret != ESP_OK) {
