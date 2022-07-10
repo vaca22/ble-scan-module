@@ -35,7 +35,7 @@ void app_main(void)
     start_scan();
 //    wifi_init_sta();
     setIo32();
-    int64_t aa= low_system_timestamp_get();
+    int64_t aa= lc_low_system_timestamp_get();
     ESP_LOGE("na","%lld",aa);
     while (1){
         gpio_set_level(GPIO_OUTPUT_IO_LED, 0);
