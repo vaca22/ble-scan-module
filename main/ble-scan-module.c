@@ -100,7 +100,7 @@ void app_main(void)
     audio_es8311_init();
     audio_cs5230e_init();
     audio_cs5230e_enable();
-    xTaskCreatePinnedToCore(audio_echo_test, "audio_echo_test", 8192, NULL, 5, NULL, 1);
+ //   xTaskCreatePinnedToCore(audio_echo_test, "audio_echo_test", 8192, NULL, 5, NULL, 1);
 
 
     xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
