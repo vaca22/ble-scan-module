@@ -92,7 +92,7 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
     start_scan();
 //    wifi_init_sta();
-    setIo32();
+   // setIo32();
     int64_t aa= lc_low_system_timestamp_get();
     ESP_LOGE("na","%lld",aa);
     ESP_ERROR_CHECK(i2cdev_init());
