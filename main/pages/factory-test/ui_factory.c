@@ -6,12 +6,13 @@
 #include "ui_res.h"
 #include "ui_helpers.h"
 #include <stdio.h>
+#include <esp_ota_ops.h>
 #include "ui_control.h"
 
 extern lv_indev_t *lv_keypad_device_object;
 
 ///////////////////// VARIABLES ////////////////////
-lv_obj_t *ui_screen_home;
+lv_obj_t *ui_screen_factory;
 lv_obj_t *ui_Panel_word_book;
 lv_obj_t *ui_image_word_book;
 lv_obj_t *ui_label_word_book;
@@ -51,7 +52,7 @@ static void ui_event_panel_back_2(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     // lv_obj_t *ta = lv_event_get_target(e);
     if (event == LV_EVENT_CLICKED) {
-        _ui_screen_change(ui_screen_home, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
+        _ui_screen_change(ui_screen_factory, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
     }
 }
 static void ui_event_PanelSettingMain(lv_event_t *e) {
@@ -59,7 +60,7 @@ static void ui_event_PanelSettingMain(lv_event_t *e) {
     // lv_obj_t *ta = lv_event_get_target(e);
 }
 
-static void ui_screen_home_callback(lv_event_t *e) {
+static void ui_screen_factory_callback(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     lv_obj_t *ta          = lv_event_get_target(e);
 
@@ -67,19 +68,24 @@ static void ui_screen_home_callback(lv_event_t *e) {
         uint32_t *key = (uint32_t *)lv_event_get_param(e);
         switch (*key) {
             case LV_KEY_UP:
-                printf("ui_screen_home LV_KEY_UP <A>\r\n");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+                printf("ui_screen_factory LV_KEY_UP <A>\r\n");
                 break;
             case LV_KEY_ENTER:
-                printf("ui_screen_home LV_KEY_ENTER <B>\r\n");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+                printf("ui_screen_factory LV_KEY_ENTER <B>\r\n");
                 break;
             case LV_KEY_DOWN:
-                printf("ui_screen_home LV_KEY_DOWN <C>\r\n");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+                printf("ui_screen_factory LV_KEY_DOWN <C>\r\n");
                 break;
             case LV_KEY_RIGHT:
-                printf("ui_screen_home LV_KEY_RIGHT <PLAY>\r\n");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+                printf("ui_screen_factory LV_KEY_RIGHT <PLAY>\r\n");
                 break;
             case LV_KEY_LEFT:
-                printf("ui_screen_home LV_KEY_LEFT <POWER>\r\n");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+                printf("ui_screen_factory LV_KEY_LEFT <POWER>\r\n");
                 break;
             default:
                 break;
@@ -89,17 +95,17 @@ static void ui_screen_home_callback(lv_event_t *e) {
 
 ///////////////////// SCREENS ////////////////////
 void ui_screen_factory_screen_init(void) {
-    // ui_screen_home
+    // ui_screen_factory
 
-    ui_screen_home = lv_obj_create(NULL);
+    ui_screen_factory = lv_obj_create(NULL);
 
-    lv_obj_clear_flag(ui_screen_home, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_clear_flag(ui_screen_factory, LV_OBJ_FLAG_SCROLLABLE);
 
-    lv_obj_set_style_border_color(ui_screen_home, lv_color_hex(0x000000),
+    lv_obj_set_style_border_color(ui_screen_factory, lv_color_hex(0x000000),
                                   LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_screen_home, 255,
+    lv_obj_set_style_border_opa(ui_screen_factory, 255,
                                 LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_screen_home, 0,
+    lv_obj_set_style_border_width(ui_screen_factory, 0,
                                   LV_PART_MAIN | LV_STATE_DEFAULT);
 
 
@@ -107,14 +113,14 @@ void ui_screen_factory_screen_init(void) {
     // TODO: 物理按键
     lv_group_t *group = lv_group_create();
     lv_indev_set_group(lv_keypad_device_object, group);
-    lv_group_add_obj(group, ui_screen_home);
+    lv_group_add_obj(group, ui_screen_factory);
     lv_group_set_editing(group, false);
 
-    lv_obj_add_event_cb(ui_screen_home, ui_screen_home_callback, LV_EVENT_ALL,
+    lv_obj_add_event_cb(ui_screen_factory, ui_screen_factory_callback, LV_EVENT_ALL,
                         NULL);
 }
 
 void load_screen_factory(void) {
     ui_screen_factory_screen_init();
-    _ui_screen_change(ui_screen_home, LV_SCR_LOAD_ANIM_FADE_ON, 0, 1000);
+    _ui_screen_change(ui_screen_factory, LV_SCR_LOAD_ANIM_FADE_ON, 0, 1000);
 }

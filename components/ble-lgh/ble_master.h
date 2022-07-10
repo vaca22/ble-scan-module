@@ -1,3 +1,3 @@
 #pragma once
 void
-start_scan(void);
+start_ble_scan(void);

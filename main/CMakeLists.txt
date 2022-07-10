@@ -13,5 +13,5 @@ idf_component_register(
         "services/button"
         "services/lv_port"
         "services/sdcard"
-        "services/setting"
-        EMBED_FILES "canon.pcm")
+        "services/setting")
+#        EMBED_FILES "canon.pcm")

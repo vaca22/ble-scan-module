@@ -197,7 +197,7 @@ void audio_echo_test(void *args) {
     }
     vTaskDelete(NULL);
 }
-extern const uint8_t music_pcm_start[] asm("_binary_canon_pcm_start");
+/*extern const uint8_t music_pcm_start[] asm("_binary_canon_pcm_start");
 extern const uint8_t music_pcm_end[]   asm("_binary_canon_pcm_end");
 void audio_echo_test2(void *args) {
     char *mic_data = malloc(RECV_BUF_SIZE);
@@ -247,7 +247,7 @@ void audio_echo_test2(void *args) {
 
     }
     vTaskDelete(NULL);
-}
+}*/
 
 /**********************
  *   STATIC FUNCTIONS

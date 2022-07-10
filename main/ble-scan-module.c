@@ -14,6 +14,7 @@
 #include "lv_api_map.h"
 #include "lv_port.h"
 #include "led.h"
+#include "udp_log.h"
 
 
 #define LV_TICK_PERIOD_MS 10
@@ -74,17 +75,18 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    start_scan();
-//    wifi_init_sta();
+//    start_scan();
+    wifi_init_sta();
+    init_udp_logging();
    // setIo32();
     int64_t aa= lc_low_system_timestamp_get();
     ESP_LOGE("na","%lld",aa);
     ESP_ERROR_CHECK(i2cdev_init());
     sd_card_init();
-    audio_es8311_init();
-    audio_cs5230e_init();
-    audio_cs5230e_enable();
-    xTaskCreatePinnedToCore(audio_echo_test2, "audio_echo_test2", 8192, NULL, 5, NULL, 1);
+//    audio_es8311_init();
+//    audio_cs5230e_init();
+//    audio_cs5230e_enable();
+   // xTaskCreatePinnedToCore(audio_echo_test2, "audio_echo_test2", 8192, NULL, 5, NULL, 1);
 
 
     xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
