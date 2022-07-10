@@ -317,5 +317,5 @@ void ui_screen_factory_screen_init(void) {
 
 void load_screen_factory(void) {
     ui_screen_factory_screen_init();
-    _ui_screen_change(ui_screen_home, LV_SCR_LOAD_ANIM_FADE_ON, 0, 3000);
+    _ui_screen_change(ui_screen_home, LV_SCR_LOAD_ANIM_FADE_ON, 0, 1000);
 }
