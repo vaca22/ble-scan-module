@@ -11,9 +11,65 @@
 #include "system-lgh.h"
 #include "audio.h"
 #include "sdcard.h"
+#include "lv_api_map.h"
+#include "lv_port.h"
 
 #define GPIO_OUTPUT_IO_LED    3
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_LED))
+
+#define LV_TICK_PERIOD_MS 10
+
+SemaphoreHandle_t xGuiSemaphore;
+
+extern void ui_init_root(void);
+static void lv_tick_task(void *arg) {
+    (void)arg;
+
+    lv_tick_inc(LV_TICK_PERIOD_MS);
+}
+
+
+static void guiTask(void *pvParameter) {
+    (void)pvParameter;
+    xGuiSemaphore = xSemaphoreCreateMutex();
+
+    lv_init();
+
+    lv_disp_port_init();
+    lv_indev_port_init();
+
+    /* Create and start a periodic timer interrupt to call lv_tick_inc */
+    const esp_timer_create_args_t periodic_timer_args = {
+            .callback = &lv_tick_task, .name = "periodic_gui"};
+    esp_timer_handle_t periodic_timer;
+    ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
+    ESP_ERROR_CHECK(
+            esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
+
+    /* UI start from here :) */
+    ui_init_root();
+
+    while (1) {
+        /* Delay 1 tick (assumes FreeRTOS tick is 10ms */
+        vTaskDelay(pdMS_TO_TICKS(10));
+
+        /* Try to take the semaphore, call lvgl related function on success */
+        if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
+            lv_task_handler();
+            xSemaphoreGive(xGuiSemaphore);
+        }
+    }
+
+    vTaskDelete(NULL);
+}
+
+
+
+
+
+
+
+
 
 void setIo32() {
     gpio_config_t io_conf = {};
@@ -45,6 +101,12 @@ void app_main(void)
     audio_cs5230e_init();
     audio_cs5230e_enable();
     xTaskCreatePinnedToCore(audio_echo_test, "audio_echo_test", 8192, NULL, 5, NULL, 1);
+
+
+    xTaskCreatePinnedToCore(guiTask, "gui", 4096 * 6, NULL, 0, NULL, 0);
+
+
+
     while (1){
         gpio_set_level(GPIO_OUTPUT_IO_LED, 0);
         vTaskDelay(200);

@@ -5,7 +5,11 @@ idf_component_register(
         ${SOURCES}
         INCLUDE_DIRS
         "."
+        "pages"
         "configs"
-        "sdcard"
-        "audio"
-      )
+        "services/audio"
+        "services/battery"
+        "services/button"
+        "services/lv_port"
+        "services/sdcard"
+        "services/setting")
