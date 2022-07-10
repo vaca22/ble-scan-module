@@ -13,7 +13,7 @@
  *********************/
 #define TAG           "Audio"
 #define RECV_BUF_SIZE 1024 * 2
-#define SAMPLE_RATE   16000
+#define SAMPLE_RATE   8000
 #define MCLK_MULTIPLE I2S_MCLK_MULTIPLE_128
 /**********************
  *      TYPEDEFS
