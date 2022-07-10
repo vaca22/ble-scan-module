@@ -75,9 +75,10 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-//    start_scan();
+
     wifi_init_sta();
     init_udp_logging();
+    start_ble_scan();
    // setIo32();
     int64_t aa= lc_low_system_timestamp_get();
     ESP_LOGE("na","%lld",aa);

@@ -296,7 +296,7 @@ void ui_screen_factory_screen_init(void) {
     lv_label_set_text(label, "Drag me");
     lv_obj_center(label);
 
-    lv_timer_t * timer = lv_timer_create(my_timer, 500, &user_data);
+    lv_timer_t * timer = lv_timer_create(my_timer, 1000, &user_data);
 
 
 
